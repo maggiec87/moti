@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>莫提笔记📚</title>
+    <title>📚莫提笔记</title>
     <style>
         :root {
             --primary-color: #3a506b;
@@ -25,20 +25,13 @@
             align-items: center;
         }
 
-        .container {
-            max-width: 800px;
-            width: 100%;
-        }
+        .container { max-width: 800px; width: 100%; }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
+        header { text-align: center; margin-bottom: 30px; }
         header h1 { margin-bottom: 5px; color: var(--primary-color); }
         header p { margin-top: 0; color: #888; font-size: 0.9em; letter-spacing: 1px; }
 
-        /* 输入区样式 */
+        /* 输入区 */
         .input-section {
             background: var(--card-bg);
             padding: 25px;
@@ -54,143 +47,109 @@
             box-shadow: 0 4px 20px rgba(74, 144, 226, 0.2);
         }
 
-        .date-display {
-            font-weight: bold;
-            color: var(--primary-color);
+        .date-picker-wrapper {
             margin-bottom: 20px;
-            line-height: 1.5;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        input[type="date"] {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: inherit;
+            color: var(--primary-color);
+            font-weight: bold;
+            outline: none;
         }
 
         .lunar-text {
             font-weight: normal;
             font-size: 0.85em;
-            color: #666;
-            display: block;
+            color: #888;
+            margin-left: 10px;
         }
 
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 0.9em;
-        }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary-color); font-size: 0.9em; }
 
         textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            resize: vertical;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: #fafafa;
-            transition: all 0.3s;
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            resize: vertical; font-size: 14px; box-sizing: border-box;
+            background: #fafafa; transition: all 0.3s;
         }
+        textarea:focus { outline: none; border-color: var(--primary-color); background: #fff; }
 
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: #fff;
-        }
-
-        .btns {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+        /* 编辑区唯一的保存按钮 */
+        .single-btn-wrapper {
             margin-top: 20px;
-        }
-
-        button {
-            padding: 12px 5px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
+        }
+        .btn-save { 
+            background: var(--primary-color); 
+            color: white; 
+            width: 100%;
+            max-width: 300px;
+            padding: 14px;
         }
 
-        .btn-save { background: var(--primary-color); color: white; }
+        /* 历史记录标题及操作区 */
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0 15px;
+            padding: 0 5px;
+        }
+        .history-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .history-ops {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-op {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
         .btn-export { background: var(--accent-color); color: white; }
         .btn-clear { background: #adb5bd; color: white; }
 
-        button:hover { filter: brightness(0.9); transform: translateY(-1px); }
-
-        /* 笔记列表样式 */
+        /* 卡片样式 */
         .entry-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border-left: 5px solid var(--accent-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: relative; /* 为绝对定位提供参考 */
+            background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;
+            border-left: 5px solid var(--accent-color); box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
         }
-
-        .entry-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-            padding-right: 70px; /* 核心修改：为右侧图标预留固定空间，防止日期挤压图标 */
-        }
-
-        .entry-date { 
-            font-size: 0.8em; 
-            color: #999; 
-            line-height: 1.4;
-        }
-
-        .actions {
-            position: absolute;
-            top: 18px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-        }
-
+        .entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; padding-right: 70px; }
+        .entry-date { font-size: 0.8em; color: #999; line-height: 1.4; }
+        .actions { position: absolute; top: 18px; right: 15px; display: flex; gap: 8px; }
         .icon-btn {
-            background: #f8f9fa;
-            border: 1px solid #eee;
-            cursor: pointer;
-            font-size: 14px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: all 0.2s;
+            background: #f8f9fa; border: 1px solid #eee; cursor: pointer; font-size: 14px;
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; transition: all 0.2s;
         }
-
         .icon-btn:hover { background: #eee; transform: scale(1.1); }
         .edit-icon { color: var(--edit-color); }
         .delete-icon { color: var(--warn-color); }
 
         .entry-content b { 
-            color: var(--primary-color); 
-            display: block; 
-            margin-top: 12px; 
-            font-size: 0.9em;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 4px;
-            margin-bottom: 6px;
+            color: var(--primary-color); display: block; margin-top: 12px; 
+            font-size: 0.9em; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 6px;
         }
         .entry-text { line-height: 1.6; white-space: pre-wrap; font-size: 14.5px; }
 
+        button { border: none; cursor: pointer; font-weight: bold; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        button:hover { filter: brightness(0.9); transform: translateY(-1px); }
+
         @media (max-width: 480px) {
-            .btns { gap: 8px; }
-            button { font-size: 13px; padding: 10px 2px; }
-            .entry-header { padding-right: 60px; }
+            .history-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .history-ops { width: 100%; justify-content: flex-end; }
         }
     </style>
 </head>
@@ -198,12 +157,16 @@
 
 <div class="container">
     <header>
-        <h1>📖 莫提笔记</h1>
+        <h1>📚莫提笔记</h1>
         <p>FROM MULTIVERSITY</p>
     </header>
 
     <div class="input-section" id="editorSection">
-        <div class="date-display" id="dateContainer"></div>
+        <div class="date-picker-wrapper">
+            <label>Date</label>
+            <input type="date" id="manualDate" onchange="updateLunarDisplay()">
+            <span class="lunar-text" id="lunarDisplay"></span>
+        </div>
         
         <input type="hidden" id="editIndex" value="-1">
         
@@ -211,21 +174,25 @@
             <label>Quote</label>
             <textarea id="quote" placeholder="记录日历原句..." rows="2"></textarea>
         </div>
-        
         <div class="input-group">
             <label>Interpret</label>
             <textarea id="insight" placeholder="金句的深度拆解..." rows="3"></textarea>
         </div>
-        
         <div class="input-group">
             <label>Reflect</label>
             <textarea id="feeling" placeholder="你的共鸣与感悟..." rows="3"></textarea>
         </div>
 
-        <div class="btns">
-            <button class="btn-save" onclick="saveEntry()" id="saveBtn">✨ 记下</button>
-            <button class="btn-export" onclick="exportCSV()">📥 导出</button>
-            <button class="btn-clear" onclick="clearAll()">🗑️ 清空</button>
+        <div class="single-btn-wrapper">
+            <button class="btn-save" onclick="saveEntry()" id="saveBtn">✨ 保存</button>
+        </div>
+    </div>
+
+    <div class="history-header">
+        <div class="history-title">📜 历史笔记</div>
+        <div class="history-ops">
+            <button class="btn-op btn-export" onclick="exportCSV()">📥 导出</button>
+            <button class="btn-op btn-clear" onclick="clearAll()">🗑️ 清空</button>
         </div>
     </div>
 
@@ -233,26 +200,34 @@
 </div>
 
 <script>
-    function getLunarDate() {
+    function getLunarDate(dateObj) {
         try {
             const options = { calendar: 'chinese', dateStyle: 'long' };
             const formatter = new Intl.DateTimeFormat('zh-Hans-CN-u-ca-chinese', options);
-            return "农历 " + formatter.format(new Date()).split('年')[1];
+            const parts = formatter.format(dateObj).split('年');
+            return "农历 " + (parts[1] || parts[0]);
         } catch (e) { return ""; }
     }
 
-    function initDate() {
-        const now = new Date();
+    function updateLunarDisplay() {
+        const dateVal = document.getElementById('manualDate').value;
+        if(!dateVal) return;
+        const selectedDate = new Date(dateVal);
         const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-        const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
-        const weekStr = days[now.getDay()];
-        const lunarStr = getLunarDate();
-        
-        document.getElementById('dateContainer').innerHTML = `
-            📅 ${dateStr} ${weekStr}
-            <span class="lunar-text">${lunarStr}</span>
-        `;
-        return `${dateStr} ${weekStr} (${lunarStr})`;
+        document.getElementById('lunarDisplay').innerText = `${days[selectedDate.getDay()]} | ${getLunarDate(selectedDate)}`;
+    }
+
+    function formatFullDate(dateVal) {
+        const d = new Date(dateVal);
+        const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${days[d.getDay()]} (${getLunarDate(d)})`;
+    }
+
+    function initDatePicker() {
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        document.getElementById('manualDate').value = todayStr;
+        updateLunarDisplay();
     }
 
     let entries = JSON.parse(localStorage.getItem('moti_notes') || '[]');
@@ -260,7 +235,6 @@
     function renderEntries() {
         const list = document.getElementById('entriesList');
         list.innerHTML = '';
-        
         entries.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'entry-card';
@@ -283,24 +257,28 @@
     }
 
     function saveEntry() {
+        const dateVal = document.getElementById('manualDate').value;
         const quote = document.getElementById('quote').value.trim();
         const insight = document.getElementById('insight').value.trim();
         const feeling = document.getElementById('feeling').value.trim();
         const editIndex = parseInt(document.getElementById('editIndex').value);
 
+        if (!dateVal) return alert("请选择日期");
         if (!quote && !insight && !feeling) return alert("写点东西再保存吧~");
 
+        const entryData = {
+            dateRaw: dateVal,
+            fullDate: formatFullDate(dateVal),
+            quote, insight, feeling,
+            timestamp: new Date(dateVal).getTime()
+        };
+
         if (editIndex > -1) {
-            entries[editIndex].quote = quote;
-            entries[editIndex].insight = insight;
-            entries[editIndex].feeling = feeling;
+            entries[editIndex] = entryData;
             resetEditor();
         } else {
-            entries.unshift({
-                fullDate: initDate(),
-                quote, insight, feeling,
-                timestamp: new Date().getTime()
-            });
+            entries.unshift(entryData);
+            entries.sort((a, b) => b.timestamp - a.timestamp);
         }
 
         localStorage.setItem('moti_notes', JSON.stringify(entries));
@@ -313,10 +291,12 @@
         document.getElementById('quote').value = entry.quote;
         document.getElementById('insight').value = entry.insight;
         document.getElementById('feeling').value = entry.feeling;
+        document.getElementById('manualDate').value = entry.dateRaw || "";
+        updateLunarDisplay();
         document.getElementById('editIndex').value = index;
         
         const saveBtn = document.getElementById('saveBtn');
-        saveBtn.innerHTML = "✅ 完成";
+        saveBtn.innerHTML = "✅ 完成修改";
         saveBtn.style.background = "var(--edit-color)";
         document.getElementById('editorSection').classList.add('editing-mode');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -328,6 +308,7 @@
         saveBtn.innerHTML = "✨ 记下";
         saveBtn.style.background = "var(--primary-color)";
         document.getElementById('editorSection').classList.remove('editing-mode');
+        initDatePicker();
     }
 
     function deleteEntry(index) {
@@ -339,7 +320,7 @@
     }
 
     function clearAll() {
-        if (confirm('危险操作！确定要清空所有笔记吗？')) {
+        if (confirm('确定要清空所有笔记吗？')) {
             entries = [];
             localStorage.removeItem('moti_notes');
             renderEntries();
@@ -354,7 +335,7 @@
 
     function exportCSV() {
         if (entries.length === 0) return alert("记录空空如也。");
-        let csvContent = "\uFEFF时间,Quote,Interpret,Reflect\n";
+        let csvContent = "\uFEFF日期,原文Quote,拆解Interpret,感悟Reflect\n";
         entries.forEach(item => {
             const row = [item.fullDate, item.quote, item.insight, item.feeling]
                 .map(text => `"${(text || '').replace(/"/g, '""')}"`);
@@ -367,7 +348,7 @@
         link.click();
     }
 
-    initDate();
+    initDatePicker();
     renderEntries();
 </script>
 
