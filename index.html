@@ -2,154 +2,169 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>📚莫提笔记</title>
     <style>
         :root {
             --primary-color: #3a506b;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --accent-color: #6fb98f;
-            --warn-color: #ff5e5e;
+            --bg-color: #ffffff;
+            --section-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --accent-color: #5fac81;
+            --warn-color: #e57373;
             --edit-color: #4a90e2;
+            --text-main: #2d3436;
+            --text-sub: #636e72;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            color: #333;
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 15px;
+            line-height: 1.5;
         }
 
-        .container { max-width: 800px; width: 100%; }
+        .container { max-width: 700px; margin: 0 auto; }
 
-        header { text-align: center; margin-bottom: 30px; }
-        header h1 { margin-bottom: 5px; color: var(--primary-color); }
-        header p { margin-top: 0; color: #888; font-size: 0.9em; letter-spacing: 1px; }
+        header { text-align: center; padding: 20px 0; border-bottom: 2px solid var(--primary-color); margin-bottom: 20px; }
+        header h1 { margin: 0; font-size: 22px; color: var(--primary-color); }
+        header p { margin: 5px 0 0; font-size: 12px; color: var(--text-sub); letter-spacing: 2px; }
 
-        /* 输入区 */
-        .input-section {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-            border: 2px solid transparent;
-            transition: all 0.3s;
+        .editor-box {
+            background: var(--section-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin-bottom: 25px;
         }
 
-        .editing-mode {
-            border-color: var(--edit-color);
-            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.2);
-        }
-
-        .date-picker-wrapper {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed #eee;
-        }
-
-        input[type="date"] {
-            border: 1px solid #ddd;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-family: inherit;
-            color: var(--primary-color);
-            font-weight: bold;
-            outline: none;
-        }
-
-        .lunar-text {
-            font-weight: normal;
-            font-size: 0.85em;
-            color: #888;
-            margin-left: 10px;
-        }
-
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary-color); font-size: 0.9em; }
-
-        textarea {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-            resize: vertical; font-size: 14px; box-sizing: border-box;
-            background: #fafafa; transition: all 0.3s;
-        }
-        textarea:focus { outline: none; border-color: var(--primary-color); background: #fff; }
-
-        /* 编辑区唯一的保存按钮 */
-        .single-btn-wrapper {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .btn-save { 
-            background: var(--primary-color); 
-            color: white; 
-            width: 100%;
-            max-width: 300px;
-            padding: 14px;
-        }
-
-        /* 历史记录标题及操作区 */
-        .history-header {
+        .date-import-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 40px 0 15px;
-            padding: 0 5px;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .history-title {
-            font-size: 1.2em;
-            font-weight: bold;
+
+        .date-input-group { display: flex; align-items: center; gap: 8px; flex: 1; }
+        
+        input[type="date"] {
+            border: 1px solid #ced4da;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
             color: var(--primary-color);
+            background: #fff;
         }
-        .history-ops {
+
+        .lunar-info { font-size: 12px; color: var(--text-sub); white-space: nowrap; }
+
+        .field-group { margin-bottom: 12px; }
+        .field-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--primary-color); }
+        
+        textarea {
+            width: 100%;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 15px;
+            resize: vertical;
+            background: #fff;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .history-controls {
+            margin-top: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--primary-color);
+        }
+        
+        .history-header-line {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .history-title { font-weight: bold; font-size: 18px; }
+
+        .toolbar-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 10px;
         }
 
-        .btn-op {
-            padding: 6px 12px;
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            background: var(--section-bg);
+            padding: 8px;
+            gap: 5px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .filter-bar input { border: 1px solid #ddd; padding: 4px; font-size: 12px; flex: 1; min-width: 90px; }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sub {
+            flex: 1;
+            min-width: 45px;
+            padding: 8px 5px;
             font-size: 12px;
-            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 4px;
         }
-        .btn-export { background: var(--accent-color); color: white; }
-        .btn-clear { background: #adb5bd; color: white; }
 
-        /* 卡片样式 */
-        .entry-card {
-            background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;
-            border-left: 5px solid var(--accent-color); box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: relative;
+        .note-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
         }
-        .entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; padding-right: 70px; }
-        .entry-date { font-size: 0.8em; color: #999; line-height: 1.4; }
-        .actions { position: absolute; top: 18px; right: 15px; display: flex; gap: 8px; }
-        .icon-btn {
-            background: #f8f9fa; border: 1px solid #eee; cursor: pointer; font-size: 14px;
-            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-            border-radius: 6px; transition: all 0.2s;
+
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
         }
-        .icon-btn:hover { background: #eee; transform: scale(1.1); }
-        .edit-icon { color: var(--edit-color); }
-        .delete-icon { color: var(--warn-color); }
+        .note-date-box .d-val { font-weight: bold; color: var(--primary-color); font-size: 14px; }
+        .note-date-box .l-val { font-size: 12px; color: var(--text-sub); }
 
-        .entry-content b { 
-            color: var(--primary-color); display: block; margin-top: 12px; 
-            font-size: 0.9em; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 6px;
-        }
-        .entry-text { line-height: 1.6; white-space: pre-wrap; font-size: 14.5px; }
+        .note-ops { display: flex; gap: 15px; }
+        .op-text { font-size: 13px; cursor: pointer; text-decoration: underline; }
+        .op-edit { color: var(--edit-color); }
+        .op-del { color: var(--warn-color); }
 
-        button { border: none; cursor: pointer; font-weight: bold; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        button:hover { filter: brightness(0.9); transform: translateY(-1px); }
+        .note-content b { display: block; margin-top: 10px; font-size: 12px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
+        .note-content p { margin: 4px 0 0; font-size: 15px; white-space: pre-wrap; color: var(--text-main); }
 
-        @media (max-width: 480px) {
-            .history-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .history-ops { width: 100%; justify-content: flex-end; }
+        #importFile { display: none; }
+
+        @media (min-width: 480px) {
+            .toolbar-grid { grid-template-columns: 2fr 1.5fr; }
         }
     </style>
 </head>
@@ -157,42 +172,55 @@
 
 <div class="container">
     <header>
-        <h1>📚莫提笔记</h1>
-        <p>FROM MULTIVERSITY</p>
+        <h1>📚 莫提笔记</h1>
+        <p>MULTIVERSITY NOTES</p>
     </header>
 
-    <div class="input-section" id="editorSection">
-        <div class="date-picker-wrapper">
-            <label>Date</label>
-            <input type="date" id="manualDate" onchange="updateLunarDisplay()">
-            <span class="lunar-text" id="lunarDisplay"></span>
+    <div class="editor-box" id="editorArea">
+        <div class="date-import-row">
+            <div class="date-input-group">
+                <input type="date" id="manualDate" onchange="updateLunarDisplay()">
+                <span class="lunar-info" id="lunarDisplay"></span>
+            </div>
+            <button class="btn-sub" style="background: var(--primary-color); color: #fff; flex: 0 0 70px;" onclick="document.getElementById('importFile').click()">📤 导入</button>
+            <input type="file" id="importFile" accept=".csv" onclick="this.value=null" onchange="importCSV(this)">
         </div>
-        
+
         <input type="hidden" id="editIndex" value="-1">
         
-        <div class="input-group">
-            <label>Quote</label>
-            <textarea id="quote" placeholder="记录日历原句..." rows="2"></textarea>
+        <div class="field-group">
+            <label>QUOTE</label>
+            <textarea id="quote" placeholder="金句原句" rows="2"></textarea>
         </div>
-        <div class="input-group">
-            <label>Interpret</label>
-            <textarea id="insight" placeholder="金句的深度拆解..." rows="3"></textarea>
+        <div class="field-group">
+            <label>INSIGHT</label>
+            <textarea id="insight" placeholder="金句诠释" rows="2"></textarea>
         </div>
-        <div class="input-group">
-            <label>Reflect</label>
-            <textarea id="feeling" placeholder="你的共鸣与感悟..." rows="3"></textarea>
+        <div class="field-group">
+            <label>REFLECT</label>
+            <textarea id="feeling" placeholder="感和悟" rows="2"></textarea>
         </div>
 
-        <div class="single-btn-wrapper">
-            <button class="btn-save" onclick="saveEntry()" id="saveBtn">✨ 保存</button>
-        </div>
+        <button class="btn-main" onclick="saveEntry()" id="saveBtn">保存笔记</button>
     </div>
 
-    <div class="history-header">
-        <div class="history-title">📜 历史笔记</div>
-        <div class="history-ops">
-            <button class="btn-op btn-export" onclick="exportCSV()">📥 导出</button>
-            <button class="btn-op btn-clear" onclick="clearAll()">🗑️ 清空</button>
+    <div class="history-controls">
+        <div class="history-header-line">
+            <div class="history-title">📜 历史笔记</div>
+        </div>
+        <div class="toolbar-grid">
+            <div class="filter-bar">
+                <button class="btn-sub" onclick="resetFilter(true)">全部</button>
+                <input type="date" id="filterStart" onchange="renderEntries()">
+                <span>-</span>
+                <input type="date" id="filterEnd" onchange="renderEntries()">
+                <button class="btn-sub" onclick="resetFilter(false)">重选</button>
+            </div>
+            <div class="action-btns">
+                <button class="btn-sub" onclick="exportCSV()">📥导出</button>
+                <button class="btn-sub" onclick="clearAll()">🗑️清空</button>
+                <button class="btn-sub" onclick="sharePage()">🔗分享</button>
+            </div>
         </div>
     </div>
 
@@ -200,119 +228,129 @@
 </div>
 
 <script>
+    let entries = JSON.parse(localStorage.getItem('moti_notes') || '[]');
+
     function getLunarDate(dateObj) {
         try {
             const options = { calendar: 'chinese', dateStyle: 'long' };
             const formatter = new Intl.DateTimeFormat('zh-Hans-CN-u-ca-chinese', options);
             const parts = formatter.format(dateObj).split('年');
-            return "农历 " + (parts[1] || parts[0]);
+            return "农历" + (parts[1] || parts[0]);
         } catch (e) { return ""; }
     }
 
     function updateLunarDisplay() {
-        const dateVal = document.getElementById('manualDate').value;
-        if(!dateVal) return;
-        const selectedDate = new Date(dateVal);
-        const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-        document.getElementById('lunarDisplay').innerText = `${days[selectedDate.getDay()]} | ${getLunarDate(selectedDate)}`;
-    }
-
-    function formatFullDate(dateVal) {
-        const d = new Date(dateVal);
-        const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-        return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${days[d.getDay()]} (${getLunarDate(d)})`;
+        const val = document.getElementById('manualDate').value;
+        if(!val) return;
+        const d = new Date(val);
+        const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+        document.getElementById('lunarDisplay').innerText = `${days[d.getDay()]} | ${getLunarDate(d)}`;
     }
 
     function initDatePicker() {
         const now = new Date();
-        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        document.getElementById('manualDate').value = todayStr;
+        const str = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        document.getElementById('manualDate').value = str;
         updateLunarDisplay();
     }
 
-    let entries = JSON.parse(localStorage.getItem('moti_notes') || '[]');
-
     function renderEntries() {
         const list = document.getElementById('entriesList');
+        const start = document.getElementById('filterStart').value;
+        const end = document.getElementById('filterEnd').value;
         list.innerHTML = '';
-        entries.forEach((item, index) => {
-            const card = document.createElement('div');
-            card.className = 'entry-card';
-            card.innerHTML = `
-                <div class="entry-header">
-                    <div class="entry-date">${item.fullDate}</div>
-                    <div class="actions">
-                        <button class="icon-btn edit-icon" onclick="editEntry(${index})" title="编辑">✍️</button>
-                        <button class="icon-btn delete-icon" onclick="deleteEntry(${index})" title="删除">🗑️</button>
+
+        const filtered = entries.filter(item => {
+            if (start && item.dateRaw < start) return false;
+            if (end && item.dateRaw > end) return false;
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#999; margin-top:20px;">暂无匹配笔记</p>';
+            return;
+        }
+
+        filtered.forEach((item) => {
+            const realIdx = entries.findIndex(e => e === item);
+            const d = new Date(item.dateRaw);
+            const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+            const div = document.createElement('div');
+            div.className = 'note-item';
+            div.innerHTML = `
+                <div class="note-meta">
+                    <div class="note-date-box">
+                        <span class="d-val">${item.dateRaw}</span>
+                        <span class="l-val">（${days[d.getDay()]} ${getLunarDate(d)}）</span>
+                    </div>
+                    <div class="note-ops">
+                        <span class="op-text op-edit" onclick="editEntry(${realIdx})">编辑</span>
+                        <span class="op-text op-del" onclick="deleteEntry(${realIdx})">删除</span>
                     </div>
                 </div>
-                <div class="entry-content">
-                    <b>QUOTE</b><div class="entry-text">${item.quote || '-'}</div>
-                    <b>INTERPRET</b><div class="entry-text">${item.insight || '-'}</div>
-                    <b>REFLECT</b><div class="entry-text">${item.feeling || '-'}</div>
+                <div class="note-content">
+                    <b>QUOTE</b><p>${item.quote || '-'}</p>
+                    <b>INSIGHT</b><p>${item.insight || '-'}</p>
+                    <b>REFLECT</b><p>${item.feeling || '-'}</p>
                 </div>
             `;
-            list.appendChild(card);
+            list.appendChild(div);
         });
     }
 
+    function resetFilter(shouldRender) {
+        document.getElementById('filterStart').value = '';
+        document.getElementById('filterEnd').value = '';
+        if(shouldRender) renderEntries();
+    }
+
     function saveEntry() {
-        const dateVal = document.getElementById('manualDate').value;
+        const dateRaw = document.getElementById('manualDate').value;
         const quote = document.getElementById('quote').value.trim();
         const insight = document.getElementById('insight').value.trim();
         const feeling = document.getElementById('feeling').value.trim();
         const editIndex = parseInt(document.getElementById('editIndex').value);
 
-        if (!dateVal) return alert("请选择日期");
-        if (!quote && !insight && !feeling) return alert("写点东西再保存吧~");
+        if (!dateRaw || (!quote && !insight && !feeling)) return alert("请填写内容及日期");
 
-        const entryData = {
-            dateRaw: dateVal,
-            fullDate: formatFullDate(dateVal),
-            quote, insight, feeling,
-            timestamp: new Date(dateVal).getTime()
-        };
+        const data = { dateRaw, quote, insight, feeling, timestamp: new Date(dateRaw).getTime() };
 
         if (editIndex > -1) {
-            entries[editIndex] = entryData;
-            resetEditor();
+            entries[editIndex] = data;
         } else {
-            entries.unshift(entryData);
-            entries.sort((a, b) => b.timestamp - a.timestamp);
+            entries.unshift(data);
         }
 
+        entries.sort((a, b) => b.timestamp - a.timestamp);
         localStorage.setItem('moti_notes', JSON.stringify(entries));
-        clearInputs();
+        resetEditor();
         renderEntries();
     }
 
     function editEntry(index) {
-        const entry = entries[index];
-        document.getElementById('quote').value = entry.quote;
-        document.getElementById('insight').value = entry.insight;
-        document.getElementById('feeling').value = entry.feeling;
-        document.getElementById('manualDate').value = entry.dateRaw || "";
-        updateLunarDisplay();
+        const e = entries[index];
+        document.getElementById('quote').value = e.quote;
+        document.getElementById('insight').value = e.insight;
+        document.getElementById('feeling').value = e.feeling;
+        document.getElementById('manualDate').value = e.dateRaw;
         document.getElementById('editIndex').value = index;
-        
-        const saveBtn = document.getElementById('saveBtn');
-        saveBtn.innerHTML = "✅ 完成修改";
-        saveBtn.style.background = "var(--edit-color)";
-        document.getElementById('editorSection').classList.add('editing-mode');
+        document.getElementById('saveBtn').innerText = "更新笔记";
+        updateLunarDisplay();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function resetEditor() {
         document.getElementById('editIndex').value = "-1";
-        const saveBtn = document.getElementById('saveBtn');
-        saveBtn.innerHTML = "✨ 记下";
-        saveBtn.style.background = "var(--primary-color)";
-        document.getElementById('editorSection').classList.remove('editing-mode');
+        document.getElementById('saveBtn').innerText = "保存笔记";
+        document.getElementById('quote').value = '';
+        document.getElementById('insight').value = '';
+        document.getElementById('feeling').value = '';
         initDatePicker();
     }
 
     function deleteEntry(index) {
-        if (confirm('确定删除这条记录吗？')) {
+        if (confirm('确定删除?')) {
             entries.splice(index, 1);
             localStorage.setItem('moti_notes', JSON.stringify(entries));
             renderEntries();
@@ -320,32 +358,120 @@
     }
 
     function clearAll() {
-        if (confirm('确定要清空所有笔记吗？')) {
+        if (confirm('确定清空全部? 这将删除所有本地存储的数据！')) {
             entries = [];
             localStorage.removeItem('moti_notes');
             renderEntries();
         }
     }
 
-    function clearInputs() {
-        document.getElementById('quote').value = '';
-        document.getElementById('insight').value = '';
-        document.getElementById('feeling').value = '';
+    function sharePage() {
+        navigator.clipboard.writeText(window.location.href).then(() => alert("链接已复制"));
     }
 
     function exportCSV() {
-        if (entries.length === 0) return alert("记录空空如也。");
-        let csvContent = "\uFEFF日期,原文Quote,拆解Interpret,感悟Reflect\n";
-        entries.forEach(item => {
-            const row = [item.fullDate, item.quote, item.insight, item.feeling]
-                .map(text => `"${(text || '').replace(/"/g, '""')}"`);
-            csvContent += row.join(",") + "\n";
+        if (!entries.length) return alert("空记录");
+        let csv = "\uFEFF日期,原文,拆解,感悟\n";
+        entries.forEach(e => {
+            const q = (e.quote || '').replace(/"/g, '""');
+            const i = (e.insight || '').replace(/"/g, '""');
+            const f = (e.feeling || '').replace(/"/g, '""');
+            csv += `"${e.dateRaw}","${q}","${i}","${f}"\n`;
         });
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `莫提笔记_${new Date().toISOString().slice(0,10)}.csv`;
-        link.click();
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `笔记_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+    }
+
+    function parseCSVLine(text) {
+        const result = [];
+        let cur = '';
+        let inQuote = false;
+        for (let n = 0; n < text.length; n++) {
+            const char = text[n];
+            const next = text[n + 1];
+            if (char === '"' && inQuote && next === '"') { cur += '"'; n++; }
+            else if (char === '"') { inQuote = !inQuote; }
+            else if (char === ',' && !inQuote) { result.push(cur); cur = ''; }
+            else { cur += char; }
+        }
+        result.push(cur);
+        return result;
+    }
+
+    // --- 核心修复：手动解析 DD-MM-YY 格式 ---
+    function importCSV(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            const lines = content.split(/\r?\n/);
+            let count = 0;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line || (i === 0 && line.includes("日期"))) continue; 
+
+                const parts = parseCSVLine(line);
+                
+                if (parts && parts.length >= 1) {
+                    let rawDateStr = parts[0].trim().replace(/^\uFEFF/, ""); 
+                    
+                    // 拆分日期字符串 (支持 - 或 / 分隔)
+                    const dateParts = rawDateStr.split(/[-/.]/);
+                    
+                    let dObj, dateRaw;
+
+                    if (dateParts.length === 3) {
+                        // 逻辑：假设输入是 DD-MM-YY 或 DD-MM-YYYY
+                        let day = dateParts[0].padStart(2, '0');
+                        let month = dateParts[1].padStart(2, '0');
+                        let year = dateParts[2];
+
+                        // 处理两位数年份 (如果是 24 变成 2024)
+                        if (year.length === 2) year = "20" + year;
+
+                        // 构建标准的 YYYY-MM-DD
+                        dateRaw = `${year}-${month}-${day}`;
+                        dObj = new Date(dateRaw);
+                    } else {
+                        // 如果格式完全不符，退回到原始解析
+                        dObj = new Date(rawDateStr);
+                        if (!isNaN(dObj.getTime())) {
+                            dateRaw = dObj.getFullYear() + '-' + 
+                                     String(dObj.getMonth() + 1).padStart(2, '0') + '-' + 
+                                     String(dObj.getDate()).padStart(2, '0');
+                        }
+                    }
+
+                    if (!dObj || isNaN(dObj.getTime())) continue;
+
+                    const quote = (parts[1] || "").trim();
+                    const insight = (parts[2] || "").trim();
+                    const feeling = (parts[3] || "").trim();
+
+                    if (!entries.some(e => e.dateRaw === dateRaw && e.quote === quote)) {
+                        entries.push({ 
+                            dateRaw, 
+                            quote, 
+                            insight, 
+                            feeling, 
+                            timestamp: dObj.getTime() 
+                        });
+                        count++;
+                    }
+                }
+            }
+            entries.sort((a, b) => b.timestamp - a.timestamp);
+            localStorage.setItem('moti_notes', JSON.stringify(entries));
+            renderEntries();
+            alert(`成功导入 ${count} 条新记录！`);
+            input.value = '';
+        };
+        reader.readAsText(file);
     }
 
     initDatePicker();
