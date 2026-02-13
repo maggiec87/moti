@@ -102,6 +102,7 @@
             margin-bottom: 15px;
         }
         .history-title { font-weight: bold; font-size: 18px; }
+        .count-badge { font-size: 12px; color: var(--text-sub); background: var(--section-bg); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border-color); }
 
         .toolbar-grid {
             display: grid;
@@ -142,24 +143,88 @@
         .note-item {
             padding: 15px 0;
             border-bottom: 1px solid var(--border-color);
+            position: relative;
         }
 
         .note-meta {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
+            align-items: center;
+            margin-bottom: 5px;
         }
         .note-date-box .d-val { font-weight: bold; color: var(--primary-color); font-size: 14px; }
         .note-date-box .l-val { font-size: 12px; color: var(--text-sub); }
 
-        .note-ops { display: flex; gap: 15px; }
-        .op-text { font-size: 13px; cursor: pointer; text-decoration: underline; }
-        .op-edit { color: var(--edit-color); }
-        .op-del { color: var(--warn-color); }
+        /* 右上角图标样式 */
+        .note-ops { display: flex; gap: 12px; align-items: center; }
+        .op-icon { 
+            font-size: 18px; 
+            cursor: pointer; 
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            line-height: 1;
+        }
+        .op-icon:active { background: #eee; }
 
-        .note-content b { display: block; margin-top: 10px; font-size: 12px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
+        .note-content b { display: block; margin-top: 10px; font-size: 11px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; }
         .note-content p { margin: 4px 0 0; font-size: 15px; white-space: pre-wrap; color: var(--text-main); }
+
+        /* 评论区样式 */
+        .comment-area {
+            margin-top: 10px;
+            background: #fdfdfd;
+            border-radius: 4px;
+            padding: 8px;
+            border-left: 3px solid #ddd;
+        }
+        .comment-item {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .comment-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .comment-text { flex: 1; padding-right: 10px; }
+        .comment-del { 
+            color: #ccc; 
+            cursor: pointer; 
+            font-weight: bold; 
+            padding: 0 4px; 
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .comment-del:hover { color: var(--warn-color); }
+
+        .footer-interact {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .click-chip {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid #eee;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            color: var(--text-sub);
+        }
+        .click-chip:active { transform: scale(0.9); }
+        .click-chip.has-val-h { border-color: #ffb8b8; color: #e57373; background: #fff5f5; }
+        .click-chip.has-val-s { border-color: #ffe082; color: #ffa000; background: #fffdf5; }
+        .click-chip.comment-btn { border-color: var(--edit-color); color: var(--edit-color); background: #f0f7ff; }
 
         #importFile { display: none; }
 
@@ -206,7 +271,8 @@
 
     <div class="history-controls">
         <div class="history-header-line">
-            <div class="history-title">📜Multiversity</div>
+            <div class="history-title">📜 Multiversity</div>
+            <span class="count-badge" id="totalCount">共 0 条</span>
         </div>
         <div class="toolbar-grid">
             <div class="filter-bar">
@@ -266,6 +332,8 @@
             return true;
         });
 
+        document.getElementById('totalCount').innerText = `共 ${filtered.length} 条`;
+
         if (filtered.length === 0) {
             list.innerHTML = '<p style="text-align:center; color:#999; margin-top:20px;">暂无匹配笔记</p>';
             return;
@@ -275,9 +343,25 @@
             const realIdx = entries.findIndex(e => e === item);
             const d = new Date(item.dateRaw);
             const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            
+            const heartCount = item.hearts || 0;
+            const starCount = item.stars || 0;
+            const comments = item.comments || [];
 
             const div = document.createElement('div');
             div.className = 'note-item';
+            
+            let commentHtml = comments.length > 0 ? `
+                <div class="comment-area">
+                    ${comments.map((c, ci) => `
+                        <div class="comment-item">
+                            <span class="comment-text">💬 ${c}</span>
+                            <span class="comment-del" onclick="deleteComment(${realIdx}, ${ci})">×</span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : '';
+
             div.innerHTML = `
                 <div class="note-meta">
                     <div class="note-date-box">
@@ -285,8 +369,8 @@
                         <span class="l-val">（${days[d.getDay()]} ${getLunarDate(d)}）</span>
                     </div>
                     <div class="note-ops">
-                        <span class="op-text op-edit" onclick="editEntry(${realIdx})">编辑</span>
-                        <span class="op-text op-del" onclick="deleteEntry(${realIdx})">删除</span>
+                        <span class="op-icon" title="编辑" onclick="editEntry(${realIdx})">✏️</span>
+                        <span class="op-icon" title="删除" onclick="deleteEntry(${realIdx})">🗑️</span>
                     </div>
                 </div>
                 <div class="note-content">
@@ -294,9 +378,40 @@
                     <b>INSIGHT</b><p>${item.insight || '-'}</p>
                     <b>REFLECT</b><p>${item.feeling || '-'}</p>
                 </div>
+                ${commentHtml}
+                <div class="footer-interact">
+                    <div class="click-chip ${heartCount > 0 ? 'has-val-h' : ''}" onclick="addMark(${realIdx}, 'hearts')">❤️ <span>${heartCount}</span></div>
+                    <div class="click-chip ${starCount > 0 ? 'has-val-s' : ''}" onclick="addMark(${realIdx}, 'stars')">⭐ <span>${starCount}</span></div>
+                    <div class="click-chip comment-btn" onclick="addComment(${realIdx})">评</div>
+                </div>
             `;
             list.appendChild(div);
         });
+    }
+
+    function addMark(index, type) {
+        if(!entries[index][type]) entries[index][type] = 0;
+        entries[index][type] += 1;
+        localStorage.setItem('moti_notes', JSON.stringify(entries));
+        renderEntries();
+    }
+
+    function addComment(index) {
+        const msg = prompt("输入对此笔记的新评论/追加想法：");
+        if (msg && msg.trim()) {
+            if (!entries[index].comments) entries[index].comments = [];
+            entries[index].comments.push(msg.trim());
+            localStorage.setItem('moti_notes', JSON.stringify(entries));
+            renderEntries();
+        }
+    }
+
+    function deleteComment(entryIndex, commentIndex) {
+        if (confirm('确定删除这条评论吗？')) {
+            entries[entryIndex].comments.splice(commentIndex, 1);
+            localStorage.setItem('moti_notes', JSON.stringify(entries));
+            renderEntries();
+        }
     }
 
     function resetFilter(shouldRender) {
@@ -314,11 +429,18 @@
 
         if (!dateRaw || (!quote && !insight && !feeling)) return alert("请填写内容及日期");
 
-        const data = { dateRaw, quote, insight, feeling, timestamp: new Date(dateRaw).getTime() };
-
         if (editIndex > -1) {
-            entries[editIndex] = data;
+            entries[editIndex].dateRaw = dateRaw;
+            entries[editIndex].quote = quote;
+            entries[editIndex].insight = insight;
+            entries[editIndex].feeling = feeling;
+            entries[editIndex].timestamp = new Date(dateRaw).getTime();
         } else {
+            const data = { 
+                dateRaw, quote, insight, feeling, 
+                hearts: 0, stars: 0, comments: [],
+                timestamp: new Date(dateRaw).getTime() 
+            };
             entries.unshift(data);
         }
 
@@ -342,7 +464,7 @@
 
     function resetEditor() {
         document.getElementById('editIndex').value = "-1";
-        document.getElementById('saveBtn').innerText = "保存笔记";
+        document.getElementById('saveBtn').innerText = "保存";
         document.getElementById('quote').value = '';
         document.getElementById('insight').value = '';
         document.getElementById('feeling').value = '';
@@ -350,7 +472,7 @@
     }
 
     function deleteEntry(index) {
-        if (confirm('确定删除?')) {
+        if (confirm('确定删除此笔记及其所有评论?')) {
             entries.splice(index, 1);
             localStorage.setItem('moti_notes', JSON.stringify(entries));
             renderEntries();
@@ -371,18 +493,18 @@
 
     function exportCSV() {
         if (!entries.length) return alert("空记录");
-        // 导出时强制表头和内容为 YYYY-MM-DD
-        let csv = "\uFEFF日期(YYYY-MM-DD),原文,拆解,感悟\n";
+        let csv = "\uFEFF日期,爱心,星星,追加评论,原文,拆解,感悟\n";
         entries.forEach(e => {
             const q = (e.quote || '').replace(/"/g, '""');
             const i = (e.insight || '').replace(/"/g, '""');
             const f = (e.feeling || '').replace(/"/g, '""');
-            csv += `"${e.dateRaw}","${q}","${i}","${f}"\n`;
+            const c = (e.comments || []).join(' | ').replace(/"/g, '""');
+            csv += `"${e.dateRaw}","${e.hearts || 0}","${e.stars || 0}","${c}","${q}","${i}","${f}"\n`;
         });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `笔记_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `莫提笔记_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
     }
 
@@ -402,7 +524,6 @@
         return result;
     }
 
-    // --- 强制 YYYY-MM-DD 导入逻辑 ---
     function importCSV(input) {
         const file = input.files[0];
         if (!file) return;
@@ -417,30 +538,31 @@
                 if (!line || (i === 0 && line.includes("日期"))) continue; 
 
                 const parts = parseCSVLine(line);
-                
                 if (parts && parts.length >= 1) {
                     let rawStr = parts[0].trim().replace(/^\uFEFF/, ""); 
-                    
-                    // 解析逻辑：统一转化为 Date 对象再重新格式化为标准的 YYYY-MM-DD
                     const dObj = new Date(rawStr);
-                    
                     if (isNaN(dObj.getTime())) continue;
 
-                    // 确保存储的是 yyyy-mm-dd
                     const dateRaw = dObj.getFullYear() + '-' + 
                                    String(dObj.getMonth() + 1).padStart(2, '0') + '-' + 
                                    String(dObj.getDate()).padStart(2, '0');
                     
-                    const quote = (parts[1] || "").trim();
-                    const insight = (parts[2] || "").trim();
-                    const feeling = (parts[3] || "").trim();
+                    let h = 0, s = 0, cms = [], q, ins, feel;
+                    if (parts.length > 4) {
+                        h = parseInt(parts[1]) || 0;
+                        s = parseInt(parts[2]) || 0;
+                        cms = parts[3] ? parts[3].split(' | ') : [];
+                        q = parts[4]; ins = parts[5]; feel = parts[6];
+                    } else {
+                        q = parts[1]; ins = parts[2]; feel = parts[3];
+                    }
 
-                    if (!entries.some(e => e.dateRaw === dateRaw && e.quote === quote)) {
+                    if (!entries.some(e => e.dateRaw === dateRaw && e.quote === q)) {
                         entries.push({ 
-                            dateRaw, 
-                            quote, 
-                            insight, 
-                            feeling, 
+                            dateRaw, hearts: h, stars: s, comments: cms,
+                            quote: (q || "").trim(), 
+                            insight: (ins || "").trim(), 
+                            feeling: (feel || "").trim(), 
                             timestamp: dObj.getTime() 
                         });
                         count++;
