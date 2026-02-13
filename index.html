@@ -173,7 +173,7 @@
 <div class="container">
     <header>
         <h1>📚 莫提笔记</h1>
-        <p>MULTIVERSITY NOTES</p>
+        <p>MULTIVERSITY INSPIRATION</p>
     </header>
 
     <div class="editor-box" id="editorArea">
@@ -190,23 +190,23 @@
         
         <div class="field-group">
             <label>QUOTE</label>
-            <textarea id="quote" placeholder="金句原句" rows="2"></textarea>
+            <textarea id="quote" placeholder="莫提金句" rows="2"></textarea>
         </div>
         <div class="field-group">
             <label>INSIGHT</label>
-            <textarea id="insight" placeholder="金句诠释" rows="2"></textarea>
+            <textarea id="insight" placeholder="金金诠释" rows="2"></textarea>
         </div>
         <div class="field-group">
             <label>REFLECT</label>
-            <textarea id="feeling" placeholder="感和悟" rows="2"></textarea>
+            <textarea id="feeling" placeholder="吾思吾感" rows="2"></textarea>
         </div>
 
-        <button class="btn-main" onclick="saveEntry()" id="saveBtn">保存笔记</button>
+        <button class="btn-main" onclick="saveEntry()" id="saveBtn">保存</button>
     </div>
 
     <div class="history-controls">
         <div class="history-header-line">
-            <div class="history-title">📜 历史笔记</div>
+            <div class="history-title">📜Multiversity</div>
         </div>
         <div class="toolbar-grid">
             <div class="filter-bar">
@@ -371,7 +371,8 @@
 
     function exportCSV() {
         if (!entries.length) return alert("空记录");
-        let csv = "\uFEFF日期,原文,拆解,感悟\n";
+        // 导出时强制表头和内容为 YYYY-MM-DD
+        let csv = "\uFEFF日期(YYYY-MM-DD),原文,拆解,感悟\n";
         entries.forEach(e => {
             const q = (e.quote || '').replace(/"/g, '""');
             const i = (e.insight || '').replace(/"/g, '""');
@@ -401,7 +402,7 @@
         return result;
     }
 
-    // --- 核心修复：手动解析 DD-MM-YY 格式 ---
+    // --- 强制 YYYY-MM-DD 导入逻辑 ---
     function importCSV(input) {
         const file = input.files[0];
         if (!file) return;
@@ -418,37 +419,18 @@
                 const parts = parseCSVLine(line);
                 
                 if (parts && parts.length >= 1) {
-                    let rawDateStr = parts[0].trim().replace(/^\uFEFF/, ""); 
+                    let rawStr = parts[0].trim().replace(/^\uFEFF/, ""); 
                     
-                    // 拆分日期字符串 (支持 - 或 / 分隔)
-                    const dateParts = rawDateStr.split(/[-/.]/);
+                    // 解析逻辑：统一转化为 Date 对象再重新格式化为标准的 YYYY-MM-DD
+                    const dObj = new Date(rawStr);
                     
-                    let dObj, dateRaw;
+                    if (isNaN(dObj.getTime())) continue;
 
-                    if (dateParts.length === 3) {
-                        // 逻辑：假设输入是 DD-MM-YY 或 DD-MM-YYYY
-                        let day = dateParts[0].padStart(2, '0');
-                        let month = dateParts[1].padStart(2, '0');
-                        let year = dateParts[2];
-
-                        // 处理两位数年份 (如果是 24 变成 2024)
-                        if (year.length === 2) year = "20" + year;
-
-                        // 构建标准的 YYYY-MM-DD
-                        dateRaw = `${year}-${month}-${day}`;
-                        dObj = new Date(dateRaw);
-                    } else {
-                        // 如果格式完全不符，退回到原始解析
-                        dObj = new Date(rawDateStr);
-                        if (!isNaN(dObj.getTime())) {
-                            dateRaw = dObj.getFullYear() + '-' + 
-                                     String(dObj.getMonth() + 1).padStart(2, '0') + '-' + 
-                                     String(dObj.getDate()).padStart(2, '0');
-                        }
-                    }
-
-                    if (!dObj || isNaN(dObj.getTime())) continue;
-
+                    // 确保存储的是 yyyy-mm-dd
+                    const dateRaw = dObj.getFullYear() + '-' + 
+                                   String(dObj.getMonth() + 1).padStart(2, '0') + '-' + 
+                                   String(dObj.getDate()).padStart(2, '0');
+                    
                     const quote = (parts[1] || "").trim();
                     const insight = (parts[2] || "").trim();
                     const feeling = (parts[3] || "").trim();
